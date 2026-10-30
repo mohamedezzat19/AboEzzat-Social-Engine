@@ -28,7 +28,7 @@ def _validate_url(value):
 
 def _format_key(item):
     quality=str(item.get("quality") or "")
-    match=re.search(r"(\\d{3,4})\\s*p",quality,re.I)
+    match=re.search(r"(\d{3,4})\s*p",quality,re.I)
     height=int(match.group(1)) if match else 0
     return (-height,0 if item.get("type")=="mp4" else 1,quality)
 
@@ -38,7 +38,7 @@ def extract_json(url,cookies=""):
         import yt_dlp
         options={"quiet":True,"no_warnings":True,"noplaylist":True,"skip_download":True,"cachedir":False,"socket_timeout":TIMEOUT_SECONDS,"ignoreerrors":False}
         if cookies:
-            if "\\r" in cookies or "\\n" in cookies: raise ValueError("Invalid cookie header")
+            if "\r" in cookies or "\n" in cookies: raise ValueError("Invalid cookie header")
             options["http_headers"]={"Cookie":cookies.strip()}
         with yt_dlp.YoutubeDL(options) as ydl: info=ydl.extract_info(safe_url,download=False)
         if not info:
