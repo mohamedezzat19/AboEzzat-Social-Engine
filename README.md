@@ -45,7 +45,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/extract \
 - `REQUEST_TIMEOUT_SECONDS`: extraction timeout.
 - `ENVIRONMENT`: set to `production` for production safeguards.
 
-Do not commit real tokens, cookies, passwords or session files. Do not log authorization headers or cookies.
+An AboEzzat client may send its current WebView cookie header in the optional `cookies` request field over HTTPS. It is used only for that extraction attempt, is excluded from response serialization, and is never forwarded to the TV. Do not commit real tokens, cookies, passwords or session files. Do not log authorization headers or cookies.
 
 ## Important limitations
 
