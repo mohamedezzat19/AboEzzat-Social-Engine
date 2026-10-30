@@ -78,7 +78,7 @@ public class EngineService extends Service {
     if(raw==null||raw.length()>65536) return json(Response.Status.BAD_REQUEST,"{\"detail\":\"Invalid request body\"}");
     JSONObject payload=new JSONObject(raw);
     String url=payload.optString("url","").trim(), cookies=payload.optString("cookies","");
-    if(url.isEmpty()||url.length()>4096||cookies.length()>16384||cookies.contains("\\r")||cookies.contains("\\n"))
+    if(url.isEmpty()||url.length()>4096||cookies.length()>16384||cookies.contains("\r")||cookies.contains("\n"))
      return json(Response.Status.BAD_REQUEST,"{\"detail\":\"Invalid request payload\"}");
     String result=Python.getInstance().getModule("social_engine").callAttr("extract_json",url,cookies).toString();
     return json(Response.Status.OK,result);
