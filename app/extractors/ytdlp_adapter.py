@@ -8,10 +8,10 @@ from app.extractors.base import BaseExtractor
 from app.schemas import ExtractResponse, MediaFormat
 
 def _format_sort_key(media_format: MediaFormat) -> tuple[int, int, str]:
-    """Prefer progressive MP4, then the highest known resolution."""
+    """Prefer highest resolution, using progressive MP4 as a tie-breaker."""
     match = re.search(r"(\d{3,4})\s*p", media_format.quality or "", re.IGNORECASE)
     height = int(match.group(1)) if match else 0
-    return (0 if media_format.type == "mp4" else 1, -height, media_format.quality or "")
+    return (-height, 0 if media_format.type == "mp4" else 1, media_format.quality or "")
 
 
 
