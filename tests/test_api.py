@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
+import pytest
 
 from app.config import settings
 from app.main import app
@@ -38,8 +39,5 @@ def test_cookie_header_is_not_serialized():
 
 
 def test_cookie_header_rejects_newlines():
-    try:
-        ExtractRequest(url="https://www.instagram.com/reel/example/", cookies="sessionid=a\\r\\nInjected: yes")
-        assert False, "Expected cookie validation to fail"
-    except ValidationError:
-        pass
+    with pytest.raises(ValidationError):
+        ExtractRequest(url="https://www.instagram.com/reel/example/", cookies="sessionid=a\r\nInjected: yes")
