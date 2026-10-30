@@ -56,3 +56,12 @@ def test_invalid_cookie_value_is_not_echoed(monkeypatch):
     )
     assert response.status_code == 422
     assert "private-session-value" not in response.text
+
+def test_production_rejects_short_bearer_token(monkeypatch):
+    from fastapi import HTTPException
+
+    monkeypatch.setattr(settings, "environment", "production")
+    monkeypatch.setattr(settings, "api_bearer_token", "too-short")
+    with pytest.raises(HTTPException) as error:
+        security.require_bearer_token("Bearer too-short")
+    assert error.value.status_code == 503
