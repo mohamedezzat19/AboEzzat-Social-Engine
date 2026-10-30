@@ -22,3 +22,5 @@ jobs:
         env:
           API_BEARER_TOKEN: ci-test-token
         run: python -m pytest -q
+      - name: Build Docker image
+        run: docker build --tag aboezzat-social-engine:ci .
