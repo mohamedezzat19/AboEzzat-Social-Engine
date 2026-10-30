@@ -21,4 +21,4 @@ jobs:
       - name: Run tests
         env:
           API_BEARER_TOKEN: ci-test-token
-        run: pytest -q
+        run: python -m pytest -q
