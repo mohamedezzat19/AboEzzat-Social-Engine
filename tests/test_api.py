@@ -41,3 +41,18 @@ def test_cookie_header_is_not_serialized():
 def test_cookie_header_rejects_newlines():
     with pytest.raises(ValidationError):
         ExtractRequest(url="https://www.instagram.com/reel/example/", cookies="sessionid=a\r\nInjected: yes")
+
+
+def test_invalid_cookie_value_is_not_echoed(monkeypatch):
+    settings.api_bearer_token = "test-secret"
+    client = TestClient(app)
+    response = client.post(
+        "/api/v1/extract",
+        headers={"Authorization": "Bearer test-secret"},
+        json={
+            "url": "https://www.instagram.com/reel/example/",
+            "cookies": "private-session-value\r\nInjected: yes",
+        },
+    )
+    assert response.status_code == 422
+    assert "private-session-value" not in response.text
