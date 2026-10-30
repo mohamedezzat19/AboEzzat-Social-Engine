@@ -1,0 +1,7 @@
+# Personal home-LAN override.
+# Use this only on a trusted private Wi-Fi network.
+# Do not configure router port-forwarding or expose port 8000 to the internet.
+services:
+  social-engine:
+    ports:
+      - "0.0.0.0:8000:8000"
