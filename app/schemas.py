@@ -11,7 +11,7 @@ class ExtractRequest(BaseModel):
     def validate_cookie_header(cls, value: str | None) -> str | None:
         if value is None:
             return None
-        if "\\r" in value or "\\n" in value:
+        if "\r" in value or "\n" in value:
             raise ValueError("Cookie header must be a single line")
         return value.strip() or None
 
