@@ -57,8 +57,8 @@ def validate_public_http_url(value: str) -> str:
 
 def require_bearer_token(authorization: str | None = Header(default=None)) -> None:
     expected = settings.api_bearer_token
-    if settings.environment.lower() in {"production", "prod"} and expected == "development-only-change-me":
-        raise HTTPException(status_code=503, detail="API bearer token is not configured")
+    if settings.environment.lower() in {"production", "prod"} and len(expected) < 32:
+        raise HTTPException(status_code=503, detail="A strong API bearer token (at least 32 characters) must be configured")
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Bearer token required")
     supplied = authorization[7:].strip()
