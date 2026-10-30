@@ -35,6 +35,7 @@ class YtDlpExtractor(BaseExtractor):
             "no_warnings": True,
             "noplaylist": True,
             "skip_download": True,
+            "cachedir": False,
             "socket_timeout": settings.request_timeout_seconds,
             "ignoreerrors": False,
         }
