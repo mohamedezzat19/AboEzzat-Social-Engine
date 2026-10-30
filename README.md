@@ -60,6 +60,19 @@ curl -X POST http://127.0.0.1:8000/api/v1/extract \
 
 An AboEzzat client may send its current WebView cookie header in the optional `cookies` request field over HTTPS. It is used only for that extraction attempt, is excluded from response serialization, and is never forwarded to the TV. Do not commit real tokens, cookies, passwords or session files. Do not log authorization headers or cookies.
 
+## Personal home-network use (no paid hosting)
+
+If you have a computer that can stay on at home, the service can be used by Share over the same trusted Wi-Fi network. This is still a local personal service, not cloud hosting.
+
+1. Copy `.env.example` to `.env`.
+2. Generate a private token with `openssl rand -hex 32` and put it in `API_BEARER_TOKEN`.
+3. Keep `SOCIAL_ENGINE_BIND_IP=127.0.0.1` for same-computer testing. For a phone/TV on the same trusted home Wi-Fi, change it to `0.0.0.0` and allow inbound TCP 8000 only on the private/home network in the computer firewall.
+4. Start with `docker compose up -d --build`.
+5. Find the computer's private LAN IPv4 address (for example `192.168.1.20`) and configure Share's Social Engine address as `http://192.168.1.20:8000`, with the same bearer token.
+6. Do not enable router port-forwarding, do not use public Wi-Fi, and return `SOCIAL_ENGINE_BIND_IP` to `127.0.0.1` when LAN access is no longer needed.
+
+The LAN bind is an explicit opt-in. The default remains loopback-only. A computer running the service must be powered on and reachable for Share to use it. No computer/server available? Keep the Social Engine connection disabled for now; the local Share extractors remain separate.
+
 ## Important limitations
 
 Platform extraction is best-effort and depends on each site's current markup, availability, region and session requirements. DRM-protected, private, login-restricted or otherwise inaccessible content is not bypassed. The adapter does not download media files; it returns candidate playback formats. Some streams may expire or require additional request headers.
