@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
 from app.config import settings
 from app.main import app
+from app.schemas import ExtractRequest
 import app.security as security
 
 
@@ -28,3 +30,16 @@ def test_direct_media_extraction(monkeypatch):
     body = response.json()
     assert body["success"] is True
     assert body["formats"][0]["type"] == "mp4"
+
+
+def test_cookie_header_is_not_serialized():
+    payload = ExtractRequest(url="https://www.instagram.com/reel/example/", cookies="sessionid=private")
+    assert "cookies" not in payload.model_dump()
+
+
+def test_cookie_header_rejects_newlines():
+    try:
+        ExtractRequest(url="https://www.instagram.com/reel/example/", cookies="sessionid=a\\r\\nInjected: yes")
+        assert False, "Expected cookie validation to fail"
+    except ValidationError:
+        pass
