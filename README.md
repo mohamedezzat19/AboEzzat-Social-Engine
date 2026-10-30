@@ -12,6 +12,19 @@ A standalone media extraction service for AboEzzat Share New and AboEzzat Receiv
 - Bearer-token authentication for extraction requests.
 - Basic URL validation and an allowlist for platform adapters.
 
+## Deployment policy (current phase)
+
+This project is **free and personal-use only** in its current phase:
+
+- No paid VPS, cloud hosting, domain, subscription, or external API account is required.
+- The only intended clients are the user's own AboEzzat Share New and AboEzzat Receiver apps.
+- Keep the service private. Do not publish its port to the public internet or expose an unauthenticated endpoint.
+- The default Docker Compose port binding is loopback-only (`127.0.0.1`). This is suitable for local development on the same computer.
+- A phone or TV cannot use another computer's `127.0.0.1`. For a personal home-LAN test, the owner may deliberately bind the service to a private LAN interface and allow only trusted devices through the router/firewall. Use a strong private bearer token and do not configure router port-forwarding.
+- No hosting provider or Linux VPS has been selected or needs to be purchased. Any remote deployment or additional users are explicitly deferred until the owner chooses to expand.
+
+The intended future integration is limited to Share New submitting extraction requests and Receiver playing the returned media URL. The Receiver should not become a public extraction server.
+
 ## Run locally
 
 ```bash
