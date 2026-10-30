@@ -9,10 +9,10 @@ from app.schemas import ExtractResponse, MediaFormat
 class YtDlpExtractor(BaseExtractor):
     name = "yt_dlp"
 
-    async def extract(self, url: str) -> ExtractResponse:
+    async def extract(self, url: str, cookies: str | None = None) -> ExtractResponse:
         try:
             return await asyncio.wait_for(
-                asyncio.to_thread(self._extract_sync, url),
+                asyncio.to_thread(self._extract_sync, url, cookies),
                 timeout=settings.request_timeout_seconds,
             )
         except asyncio.TimeoutError:
@@ -21,13 +21,13 @@ class YtDlpExtractor(BaseExtractor):
                 message="The platform extractor timed out.",
             )
         except Exception as exc:
-            # Do not expose extractor exception text; it can contain private URLs or headers.
+            # Do not expose extractor exception text; it may contain private URLs or headers.
             return ExtractResponse(
                 success=False, extractor=self.name, error_code="PLATFORM_EXTRACTION_FAILED",
                 message=f"yt-dlp could not extract this page ({type(exc).__name__}).",
             )
 
-    def _extract_sync(self, url: str) -> ExtractResponse:
+    def _extract_sync(self, url: str, cookies: str | None = None) -> ExtractResponse:
         import yt_dlp
 
         options = {
@@ -38,6 +38,10 @@ class YtDlpExtractor(BaseExtractor):
             "socket_timeout": settings.request_timeout_seconds,
             "ignoreerrors": False,
         }
+        if cookies:
+            # Never print or return this header. It is used only for this extraction request.
+            options["http_headers"] = {"Cookie": cookies}
+
         with yt_dlp.YoutubeDL(options) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -70,7 +74,7 @@ class YtDlpExtractor(BaseExtractor):
             else:
                 kind = "unknown"
 
-            # Do not forward credentials/cookies from extractor metadata to the TV.
+            # Credentials/cookies from extractor metadata are never sent to the TV.
             headers = {
                 str(k): str(v) for k, v in (item.get("http_headers") or {}).items()
                 if str(k).lower() not in {"cookie", "authorization", "proxy-authorization"}
@@ -103,6 +107,6 @@ class YtDlpExtractor(BaseExtractor):
             title=info.get("title"),
             thumbnail=info.get("thumbnail"),
             formats=formats[:12],
-            requires_cookies=bool(info.get("login_required")),
+            requires_cookies=False,
             extractor=self.name,
         )
