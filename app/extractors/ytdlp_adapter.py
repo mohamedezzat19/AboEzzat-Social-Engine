@@ -1,5 +1,13 @@
 import asyncio
 from urllib.parse import urlsplit
+import re
+
+
+def _format_sort_key(media_format: MediaFormat) -> tuple[int, int, str]:
+    """Prefer progressive MP4, then the highest known resolution."""
+    match = re.search(r"(\\d{3,4})\\s*p", media_format.quality or "", re.IGNORECASE)
+    height = int(match.group(1)) if match else 0
+    return (0 if media_format.type == "mp4" else 1, -height, media_format.quality or "")
 
 from app.config import settings
 from app.extractors.base import BaseExtractor
@@ -101,7 +109,7 @@ class YtDlpExtractor(BaseExtractor):
                 requires_cookies=bool(info.get("login_required")),
             )
 
-        formats.sort(key=lambda f: (f.type != "mp4", f.quality or ""), reverse=False)
+        formats.sort(key=_format_sort_key)
         return ExtractResponse(
             success=True,
             platform=info.get("extractor_key") or urlsplit(url).hostname,
