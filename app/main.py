@@ -20,7 +20,7 @@ async def health():
 )
 async def extract_media(payload: ExtractRequest):
     safe_url = validate_public_http_url(payload.url)
-    result = await registry.extract(safe_url)
+    result = await registry.extract(safe_url, cookies=payload.cookies)
     return result or ExtractResponse(
         success=False,
         error_code="NO_EXTRACTOR",
