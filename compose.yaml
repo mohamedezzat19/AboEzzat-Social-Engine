@@ -1,0 +1,21 @@
+services:
+  social-engine:
+    build: .
+    image: aboezzat-social-engine:latest
+    container_name: aboezzat-social-engine
+    restart: unless-stopped
+    environment:
+      APP_NAME: AboEzzat Social Engine
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      API_BEARER_TOKEN: ${API_BEARER_TOKEN:?Set API_BEARER_TOKEN in your environment}
+      REQUEST_TIMEOUT_SECONDS: ${REQUEST_TIMEOUT_SECONDS:-20}
+      MAX_URL_LENGTH: ${MAX_URL_LENGTH:-4096}
+      ENABLE_YTDLP: ${ENABLE_YTDLP:-true}
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
